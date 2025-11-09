@@ -1,0 +1,5 @@
+{
+  "name": "Sistema de Gestão de Projetos Contábeis",
+  "description": "A web application to manage accounting projects, vendors, payments, and generate SAA documents. This system replaces a temporary Google Sheets script, providing a robust and user-friendly interface for accounting workflows.",
+  "requestFramePermissions": []
+}

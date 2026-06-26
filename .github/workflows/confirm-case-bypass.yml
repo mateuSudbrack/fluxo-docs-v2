@@ -1,0 +1,34 @@
+name: confirm-macos-case-insensitive-write-deny-bypass
+
+# Runs the real sandbox-runtime profile generator + real /usr/bin/sandbox-exec
+# on a macOS runner (default APFS, case-insensitive) to settle whether Seatbelt
+# matches the literal syscall path (bypass) or case-folds before matching.
+
+on:
+  workflow_dispatch: {}
+  push:
+    paths:
+      - "**/run-seatbelt-case-test.mjs"
+      - "**/confirm-case-bypass.yml"
+
+jobs:
+  seatbelt-case-test:
+    runs-on: macos-latest   # Apple silicon, default APFS case-insensitive
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Confirm filesystem is case-insensitive
+        run: |
+          d=$(mktemp -d)
+          echo hi > "$d/CaseProbe"
+          if [ -f "$d/caseprobe" ]; then echo "FS is case-insensitive (good)"; else echo "FS is case-SENSITIVE — test not representative"; fi
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install the exact shipped library
+        run: npm i @anthropic-ai/sandbox-runtime@0.0.52
+
+      - name: Run Seatbelt case-bypass probe (real sandbox-exec)
+        run: node run-seatbelt-case-test.mjs
